@@ -1,0 +1,19 @@
+{
+  "name": "sql",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fastify": "^4.10.2",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.8.1",
+    "sqlite3": "^5.1.4"
+  },
+  "type": "module"
+}
