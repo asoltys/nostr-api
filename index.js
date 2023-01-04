@@ -1,7 +1,11 @@
+import * as dotenv from 'dotenv'
 import fastify from "fastify";
 import sqlite3 from "sqlite3";
+dotenv.config()
 
-const db = new sqlite3.Database("/data/nostr.db");
+const { DB } = process.env;
+
+const db = new sqlite3.Database(DB);
 
 const app = fastify();
 
