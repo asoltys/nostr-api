@@ -1,7 +1,7 @@
 import fastify from "fastify";
 import sqlite3 from "sqlite3";
 
-const db = new sqlite3.Database("nostr.db");
+const db = new sqlite3.Database("/data/nostr.db");
 
 const app = fastify();
 
