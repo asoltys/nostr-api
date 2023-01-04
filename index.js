@@ -1,7 +1,7 @@
-import * as dotenv from 'dotenv'
+import * as dotenv from "dotenv";
 import fastify from "fastify";
 import sqlite3 from "sqlite3";
-dotenv.config()
+dotenv.config();
 
 const { DB } = process.env;
 
@@ -26,7 +26,12 @@ app.get("/follows", async (req, res) => {
         )`,
         (err, rows) => {
           if (err) j(err);
-          r(rows.map(({ value, value_hex }) => ({ hex: value_hex.toString("hex"), value })));
+          r(
+            rows.map(({ value, value_hex }) => ({
+              hex: value_hex.toString("hex"),
+              value,
+            }))
+          );
         }
       );
     });
@@ -66,19 +71,23 @@ app.get("/followers", async (req, res) => {
   }
 });
 
-app.get("/:pubkey/messages", async (req, res) => {
-  let { pubkey } = req.params;
+app.get("/:a/:b/messages", async (req, res) => {
+  let { a, b } = req.params;
 
   try {
     let events = await new Promise((r, j) => {
       db.all(
-        `SELECT content
+        `SELECT author, content, created_at
         FROM event 
         JOIN tag ON tag.event_id = event.id
-        WHERE kind = 4
-        AND LOWER(HEX(tag.value_hex)) = "${pubkey}"
-        LIMIT 10
-        `,
+        WHERE kind = 4 
+        AND ((
+        LOWER(HEX(author)) = "${a}"
+        AND LOWER(HEX(tag.value_hex)) = "${b}"
+        ) OR (
+        LOWER(HEX(author)) = "${b}"
+        AND LOWER(HEX(tag.value_hex)) = "${a}"
+        ))`,
         (err, rows) => {
           if (err) return j(err);
           r(rows);
@@ -88,7 +97,7 @@ app.get("/:pubkey/messages", async (req, res) => {
 
     res.send(events);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.code(500).send(e.message);
   }
 });
