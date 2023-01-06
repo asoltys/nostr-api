@@ -71,13 +71,13 @@ app.get("/followers", async (req, res) => {
   }
 });
 
-app.get("/:a/:b/messages", async (req, res) => {
-  let { a, b } = req.params;
+app.get("/:a/:b/:since/messages", async (req, res) => {
+  let { a, b, since } = req.params;
 
   try {
     let events = await new Promise((r, j) => {
       db.all(
-        `SELECT author, content, created_at
+        `SELECT content
         FROM event 
         JOIN tag ON tag.event_id = event.id
         WHERE kind = 4 
@@ -87,10 +87,11 @@ app.get("/:a/:b/messages", async (req, res) => {
         ) OR (
         LOWER(HEX(author)) = "${b}"
         AND LOWER(HEX(tag.value_hex)) = "${a}"
-        ))`,
+        ))
+        AND created_at > ${since}`,
         (err, rows) => {
           if (err) return j(err);
-          r(rows);
+          r(rows.map((r) => JSON.parse(r.content)));
         }
       );
     });
